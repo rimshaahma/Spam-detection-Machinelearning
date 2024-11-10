@@ -1,0 +1,72 @@
+import joblib
+
+# Save the trained Naive Bayes model
+joblib.dump(model, 'spam_classifier_model.pkl')
+print("Model saved as spam_classifier_model.pkl")
+# Load the saved vectorizer and model
+tfidf_vectorizer = joblib.load('vectorizer.pkl')
+model = joblib.load('spam_classifier_model.pkl')
+
+# Example new SMS data for prediction
+new_sms = ['Congratulations, you have won a lottery! Call now!',
+           'Hi, are we still meeting tomorrow?']
+
+# Transform the new SMS messages using the vectorizer
+X_new = tfidf_vectorizer.transform(new_sms)
+
+# Make predictions using the loaded model
+predictions = model.predict(X_new)
+
+# Print predictions (1 for spam, 0 for ham)
+print(predictions)  # Example output: [1 0]
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Print evaluation metrics
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+import joblib
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# 1. Load your SMS data (already preprocessed in 'transformed_text' column)
+# df = ...  # Make sure this DataFrame is already defined
+
+# 2. Initialize and fit the vectorizer
+tfidf_vectorizer = TfidfVectorizer(max_features=3000)
+X = tfidf_vectorizer.fit_transform(df['transformed_text'])  # Fit vectorizer on SMS text data
+y = df['target']  # Labels: 1 for spam, 0 for ham
+
+# 3. Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 4. Initialize and train the Multinomial Naive Bayes model
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+# 5. Save the vectorizer and model
+joblib.dump(tfidf_vectorizer, 'vectorizer.pkl')
+joblib.dump(model, 'spam_classifier_model.pkl')
+print("Vectorizer and model saved.")
+
+# 6. Evaluate the model on test data
+y_pred = model.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# 7. Load the vectorizer and model for future use
+tfidf_vectorizer = joblib.load('vectorizer.pkl')
+model = joblib.load('spam_classifier_model.pkl')
+
+# 8. Predict on new SMS messages
+new_sms = ['Congratulations, you have won a lottery!',
+           'Hi, are we still meeting tomorrow?']
+
+X_new = tfidf_vectorizer.transform(new_sms)
+predictions = model.predict(X_new)
+
+print(predictions)  # Output: [1, 0] where 1 is spam, 0 is ham
